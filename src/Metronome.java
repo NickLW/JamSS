@@ -22,7 +22,7 @@ public class Metronome extends JPanel {
 
     //static Logger log = Logger.getLogger(Metronome.class);
 	private final int instrument = 25;
-    private final int velocity = 97;
+    private final int velocity = 75;
     private Thread thread; // New thread each time the metronome is turned on
     private final Runnable runnable = createRunnable();
     private long timeBetweenBeats;
@@ -34,6 +34,8 @@ public class Metronome extends JPanel {
     public int currNote = 30;
     public MidiTest drums;
     boolean drumsOn = false;
+    public int count = 1;
+    public int barCount = 1;
     
     
     private static final double[] FREQUENCIES = { 174.61, 164.81, 155.56, 146.83, 138.59, 130.81, 123.47, 116.54, 110.00, 103.83, 98.00, 92.50, 87.31, 82.41, 77.78};
@@ -78,7 +80,7 @@ public class Metronome extends JPanel {
             //log.error(ex);
         }
         initComponents();
-        setTempo(108);
+        setTempo(72);
         setNoteFromChoice();
         metronomeButton.requestFocus();
     }
@@ -202,15 +204,47 @@ public class Metronome extends JPanel {
         		// turn on and off the same note.
         		final int noteForThisBeat = note; 
 
-        		// System.out.println ("late(+)/early(-): " + wokeLateOrEarlyBy);
-        		if (!played){
-        		channel.noteOn(noteForThisBeat - octaves, velocity);
-        		channel.noteOn((noteForThisBeat + 4) - octaves, velocity);
-        		channel.noteOn((noteForThisBeat + 7) - octaves, velocity);
-        		played = true;
-        		} else {
-        			played = false;
-        		}
+        		 System.out.println ("late(+)/early(-): " + wokeLateOrEarlyBy);
+        		
+        		/*THIS BIT IS SORTING WHAT THE GUITARS PLAY AND WHEN!!*/
+        		
+        		//if (!played){
+        		//if(barCount % 2 != 0){
+	        		
+	        		if (count % 2 == 0) {
+		        		channel.noteOn(noteForThisBeat - octaves, velocity);
+		        		channel.noteOn((noteForThisBeat + 4) - octaves, velocity);
+		        		channel.noteOn((noteForThisBeat + 7) - octaves, velocity);
+		        		count ++;
+	        		} else {
+	        			count ++;
+	        		}
+	        		
+	        		if(count > 4){
+		        	//	played = false;
+		        		count = 1;
+		        		barCount ++;
+		        	//played = true;
+		        	}
+	        		
+        		//} else {
+        			/*if(count > 1) {
+		        		channel.noteOn(noteForThisBeat - octaves, velocity);
+		        		channel.noteOn((noteForThisBeat + 4) - octaves, velocity);
+		        		channel.noteOn((noteForThisBeat + 7) - octaves, velocity);
+		        		count ++;
+	        		//played = true;
+	        		} else {
+	        			count ++;
+	        		}
+        			
+        			if (count > 4){
+    	        		//	played = false;
+    	        		count = 1;
+    	        		barCount ++;
+    	        	}
+        			
+        		}*/
         		
         		
         		if (!drumsOn){
@@ -355,7 +389,7 @@ public class Metronome extends JPanel {
 
         tempoChooser.setMaximum(208);
         tempoChooser.setMinimum(40);
-        tempoChooser.setValue(60);
+        tempoChooser.setValue(72);
         tempoChooser.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 tempoChooserStateChanged(evt);

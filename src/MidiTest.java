@@ -35,7 +35,7 @@ public class MidiTest implements MetaEventListener {
 
   // The drum track in the example Midi file
   private static final int DRUM_TRACK = 1;
-  public int tempo = 108;
+  public float tempo = 108;
   
 
   /*public static void main(String[] args) {
