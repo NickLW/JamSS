@@ -45,6 +45,7 @@ public class Jam extends JFrame implements PitchDetectionHandler {
 	private static final long serialVersionUID = 1383896180290138076L;
 	private final SpectrogramPanel panel;
 	private final Metronome metronome;
+	private final MidiTest drums;
 	private AudioDispatcher dispatcher;
 	private Mixer currentMixer;	
 	private PitchEstimationAlgorithm algo;
@@ -82,6 +83,7 @@ public class Jam extends JFrame implements PitchDetectionHandler {
 		this.setTitle("Spectrogram");
 		panel = new SpectrogramPanel();
 		metronome = new Metronome();
+		drums = new MidiTest();
 		algo = PitchEstimationAlgorithm.FFT_YIN;
 		this.fileName = fileName;
 		

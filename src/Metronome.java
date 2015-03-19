@@ -22,14 +22,19 @@ public class Metronome extends JPanel {
 
     //static Logger log = Logger.getLogger(Metronome.class);
 	private final int instrument = 25;
-    private final int velocity = 127;
+    private final int velocity = 97;
     private Thread thread; // New thread each time the metronome is turned on
     private final Runnable runnable = createRunnable();
     private long timeBetweenBeats;
     private MidiChannel channel = null;
     private boolean keepPlaying;
     public int note;
+    public int note2;
+    public int note3;
     public int currNote = 30;
+    public MidiTest drums;
+    boolean drumsOn = false;
+    
     
     private static final double[] FREQUENCIES = { 174.61, 164.81, 155.56, 146.83, 138.59, 130.81, 123.47, 116.54, 110.00, 103.83, 98.00, 92.50, 87.31, 82.41, 77.78};
     private static final String[] NAME        = { "F",    "E",    "D#",   "D",    "C#",   "C",    "B",    "A#",   "A",    "G#",   "G",   "F#",  "F",   "E",   "D#"};
@@ -45,6 +50,7 @@ public class Metronome extends JPanel {
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setLocationRelativeTo(null);
         f.setVisible(true);
+        
     }
 
     /** Creates new form Metronome */
@@ -57,10 +63,10 @@ public class Metronome extends JPanel {
             synthesizer.open();
             //synthesizer.loadAllInstruments(synthesizer.getDefaultSoundbank());
             channel = synthesizer.getChannels()[2];
-            channel.programChange(0, 51);
+            channel.programChange(0, 81);
             Instrument[] instr = synthesizer.getDefaultSoundbank().getInstruments();
             System.out.println(instr[50]);
-            synthesizer.loadInstrument(instr[51]);
+            synthesizer.loadInstrument(instr[81]);
             
           //  MidiEvent event = null;
     	    
@@ -84,6 +90,7 @@ public class Metronome extends JPanel {
     public void setTempo(int beatsPerMinute) {
         processTempoChange(beatsPerMinute);
         tempoChooser.setValue(beatsPerMinute);
+        
     }
 
     /**
@@ -93,6 +100,8 @@ public class Metronome extends JPanel {
      */
     public void setNote(int note) {
         this.note = note;
+        this.note2 = note + 4;
+        this.note3 = note + 7;
     }
     
     public void setCurrNote(double pitch){
@@ -181,7 +190,11 @@ public class Metronome extends JPanel {
         return new Runnable() {
 
         	public void run() {
+        		drums = new MidiTest();
+        		
         		long wokeLateOrEarlyBy = 0;
+        		boolean played = false;
+        		int octaves = 12;
 
         		while (keepPlaying) {
         			setNote(currNote);
@@ -190,9 +203,21 @@ public class Metronome extends JPanel {
         		final int noteForThisBeat = note; 
 
         		// System.out.println ("late(+)/early(-): " + wokeLateOrEarlyBy);
-
-        		channel.noteOn(noteForThisBeat, velocity);
-
+        		if (!played){
+        		channel.noteOn(noteForThisBeat - octaves, velocity);
+        		channel.noteOn((noteForThisBeat + 4) - octaves, velocity);
+        		channel.noteOn((noteForThisBeat + 7) - octaves, velocity);
+        		played = true;
+        		} else {
+        			played = false;
+        		}
+        		
+        		
+        		if (!drumsOn){
+        		drums.run();
+        		drumsOn = true;
+        		}
+        		
         		final long currentTimeBeforeSleep = System.currentTimeMillis();
         		//correct time to sleep by previous error, to keep the overall tempo
         		final long sleepTime = timeBetweenBeats - wokeLateOrEarlyBy;
@@ -203,8 +228,12 @@ public class Metronome extends JPanel {
         		// log.debug("Interrupted");
         		}
         		wokeLateOrEarlyBy = System.currentTimeMillis() - expectedWakeTime;
-
-        		channel.noteOff(noteForThisBeat);
+        		
+        		
+        		channel.noteOff(noteForThisBeat - octaves);
+        		channel.noteOff((noteForThisBeat + 4) - octaves);
+        		channel.noteOff((noteForThisBeat + 7) - octaves);
+        		
         		}
         		// log.debug("Thread ending");
         		}
@@ -346,6 +375,8 @@ private void metronomeButtonActionPerformed(java.awt.event.ActionEvent evt) {//G
     if (metronomeButton.isSelected()) {
         startThread();
     } else {
+    	drums.player.stop();
+    	drumsOn = false;
         stop();
     }
 
