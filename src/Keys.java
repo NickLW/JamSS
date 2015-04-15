@@ -18,7 +18,7 @@ import javax.swing.JSlider;
  * A metronome.
  * @author  Dave Briccetti
  */
-public class Metronome extends JPanel {
+public class Keys extends JPanel {
 
     //static Logger log = Logger.getLogger(Metronome.class);
 	private final int instrument = 25;
@@ -36,15 +36,13 @@ public class Metronome extends JPanel {
     boolean drumsOn = false;
     public int count = 1;
     public int barCount = 0;
-    private static String scale = "Major";
-    private static String root = "E";
+    
     
     private static final double[] FREQUENCIES = { 174.61, 164.81, 155.56, 146.83, 138.59, 130.81, 123.47, 116.54, 110.00, 103.83, 98.00, 92.50, 87.31, 82.41, 77.78};
     private static final String[] NAME        = { "F",    "E",    "D#",   "D",    "C#",   "C",    "B",    "A#",   "A",    "G#",   "G",   "F#",  "F",   "E",   "D#"};
 	
-    private static double[] MAJFREQUENCIES = Scale.getFreq(root, scale);
-    private static String[] MAJNAME        = Scale.getScale(root, scale);
-    
+
+
     public static void main(String[] args) {
         JFrame f = new JFrame("DBSchools Metronome");
         final JPanel met = new Metronome();
@@ -58,7 +56,7 @@ public class Metronome extends JPanel {
     }
 
     /** Creates new form Metronome */
-    public Metronome() {
+    public Keys() {
         try {
         	MidiDevice.Info[] midiDeviceInfoArray = MidiSystem.getMidiDeviceInfo();
         	MidiDevice device;
@@ -83,7 +81,7 @@ public class Metronome extends JPanel {
         }
         initComponents();
         setTempo(72);
-        setScaleFromChoice();
+        setNoteFromChoice();
         metronomeButton.requestFocus();
     }
 
@@ -124,31 +122,31 @@ public class Metronome extends JPanel {
             
             } */
             
-            if (MAJNAME[note] == "F"){
+            if (NAME[note] == "F"){
             	this.currNote = 65;
-            } else if (MAJNAME[note] == "E"){
+            } else if (NAME[note] == "E"){
             	this.currNote = 64;
-            } else if (MAJNAME[note] == "D#"){
+            } /*else if (NAME[note] == "D#"){
             	this.currNote = 63;
-            } else if (MAJNAME[note] == "D"){
+            }*/ else if (NAME[note] == "D"){
             	this.currNote = 62;
-            } else if (MAJNAME[note] == "C#"){
+            } /*else if (NAME[note] == "C#"){
             	this.currNote = 61;
-            } else if (MAJNAME[note] == "C"){
+            }*/ else if (NAME[note] == "C"){
             	this.currNote = 60;
-            } else if (MAJNAME[note] == "B"){
+            } else if (NAME[note] == "B"){
             	this.currNote = 71;
-            } else if (MAJNAME[note] == "A#"){
+            } /*else if (NAME[note] == "A#"){
             	this.currNote = 70;
-            } else if (MAJNAME[note] == "A"){
+            }*/ else if (NAME[note] == "A"){
             	this.currNote = 69;
-            } else if (MAJNAME[note] == "G#"){
+            }/* else if (NAME[note] == "G#"){
             	this.currNote = 68;
-            } else if (MAJNAME[note] == "G"){
+            }*/ else if (NAME[note] == "G"){
             	this.currNote = 67;
-            } else if (MAJNAME[note] == "F#"){
+            }/* else if (NAME[note] == "F#"){
             	this.currNote = 66;
-            } 
+            }*/ 
 
 		}
     }
@@ -167,8 +165,8 @@ public class Metronome extends JPanel {
     private static int closestNote(double hz) {
         double minDist = Double.MAX_VALUE;
         int minFreq = -1;
-        for ( int i = 0; i < MAJFREQUENCIES.length; i++ ) {
-            double dist = Math.abs(MAJFREQUENCIES[i]-hz);
+        for ( int i = 0; i < FREQUENCIES.length; i++ ) {
+            double dist = Math.abs(FREQUENCIES[i]-hz);
             if ( dist < minDist ) {
                 minDist=dist;
                 minFreq=i;
@@ -213,8 +211,7 @@ public class Metronome extends JPanel {
         		//if (!played){
         		//if(barCount % 2 != 0){
         		 
-        		 MAJFREQUENCIES = Scale.getFreq(root, scale);
-        		 MAJNAME        = Scale.getScale(root, scale);
+        		 
         		 
         		 if (!drumsOn){
              		drums.run();
@@ -311,7 +308,7 @@ public class Metronome extends JPanel {
     }
 
     private void setMetronomeButtonText(int beatsPerMinute) {
-        metronomeButton.setText(Integer.toString(beatsPerMinute) + "bpm" + " " + "JAM!");
+        metronomeButton.setText(Integer.toString(beatsPerMinute));
     }
 
     private void startThread() {
@@ -323,19 +320,21 @@ public class Metronome extends JPanel {
         }
     }
     
-    void setScaleFromChoice() {
-        scale = (((ScaleChoice)scaleChooser.getSelectedItem()).getName());
-    }
-    
-    void setRootFromChoice() {
-        root = (((RootChoice)rootChooser.getSelectedItem()).getName());
+    void setNoteFromChoice() {
+        setNote(((PercussionSound)soundChooser.getSelectedItem()).getMidiNote());
     }
 
-    static private class ScaleChoice {
+    static private class PercussionSound {
         private final String name;
+        private final int midiNote;
 
-        public ScaleChoice(String name) {
+        public PercussionSound(String name, int midiNote) {
             this.name = name;
+            this.midiNote = midiNote;
+        }
+
+        public int getMidiNote() {
+            return midiNote;
         }
 
         public String getName() {
@@ -349,37 +348,14 @@ public class Metronome extends JPanel {
         
     }
     
-    private ScaleChoice[] getSChoice() {
-        return new ScaleChoice[] {
-            new ScaleChoice("Major"),
-            new ScaleChoice("Minor"),
-        };
-    }
-    
-    static private class RootChoice {
-        private final String rname;
-        private final int rmidiNote;
-
-        public RootChoice(String name, int midiNote) {
-            this.rname = name;
-            this.rmidiNote = midiNote;
-        }
-
-        public String getName() {
-            return rname;
-        }
-
-        @Override
-        public String toString() {
-            return rname;
-        }
-        
-    }
-    
-    private RootChoice[] getRChoice() {
-        return new RootChoice[] {
-            new RootChoice("E", 75),
-            new RootChoice("C", 56),
+    private PercussionSound[] getSounds() {
+        return new PercussionSound[] {
+            new PercussionSound("Claves", 75),
+            new PercussionSound("Cow Bell", 56),
+            new PercussionSound("High Bongo", 60),
+            new PercussionSound("Low Bongo", 61),
+            new PercussionSound("High Wood Block", 76),
+            new PercussionSound("Low Wood Block", 77),
         };
     }
 
@@ -394,8 +370,7 @@ public class Metronome extends JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         metronomeButton = new javax.swing.JToggleButton();
-        scaleChooser = new javax.swing.JComboBox();
-        rootChooser = new javax.swing.JComboBox();
+        soundChooser = new javax.swing.JComboBox();
         tempoChooser = new javax.swing.JSlider();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder("Metronome"));
@@ -410,35 +385,22 @@ public class Metronome extends JPanel {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
         add(metronomeButton, gridBagConstraints);
 
-        scaleChooser.setModel(new javax.swing.DefaultComboBoxModel(getSChoice()));
-        scaleChooser.setToolTipText("Select the scale to use");
-        scaleChooser.addActionListener(new java.awt.event.ActionListener() {
+        soundChooser.setModel(new javax.swing.DefaultComboBoxModel(getSounds()));
+        soundChooser.setToolTipText("Select the sound to use");
+        soundChooser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 soundChooserActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
-        add(scaleChooser, gridBagConstraints);
-        
-        //FOR ROOT NOTE CHOICE
-        rootChooser.setModel(new javax.swing.DefaultComboBoxModel(getRChoice()));
-        rootChooser.setToolTipText("Select the root to use");
-        rootChooser.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rootChooserActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        add(rootChooser, gridBagConstraints);
+        add(soundChooser, gridBagConstraints);
 
         tempoChooser.setMaximum(208);
         tempoChooser.setMinimum(40);
@@ -470,11 +432,7 @@ private void metronomeButtonActionPerformed(java.awt.event.ActionEvent evt) {//G
 }//GEN-LAST:event_metronomeButtonActionPerformed
 
 private void soundChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_soundChooserActionPerformed
-    setScaleFromChoice();
-}//GEN-LAST:event_soundChooserActionPerformed
-
-private void rootChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_soundChooserActionPerformed
-    setRootFromChoice();
+    setNoteFromChoice();
 }//GEN-LAST:event_soundChooserActionPerformed
 
 private void tempoChooserStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tempoChooserStateChanged
@@ -488,8 +446,7 @@ private void tempoChooserStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton metronomeButton;
-    private javax.swing.JComboBox scaleChooser;
-    private javax.swing.JComboBox rootChooser;
+    private javax.swing.JComboBox soundChooser;
     private javax.swing.JSlider tempoChooser;
     // End of variables declaration//GEN-END:variables
 

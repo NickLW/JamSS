@@ -25,6 +25,7 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
+import javax.sound.midi.Track;
 
 /**
  * An example that plays a Midi sequence. First, the sequence is played once
@@ -35,37 +36,56 @@ public class MidiTest implements MetaEventListener {
 
   // The drum track in the example Midi file
   private static final int DRUM_TRACK = 1;
-  public float tempo = 108;
+  public float tempo = 72;
   
 
   /*public static void main(String[] args) {
     new MidiTest().run();
   }*/
+
+  public MidiPlayer player;
   
   public void setBPM(int beatsPerMinute){
 	  tempo = beatsPerMinute;
+	  
   }
-
-  public MidiPlayer player;
+   
 
   public void run() {
 
     player = new MidiPlayer();
-
+    
     // load a sequence
-    Sequence sequence = player.getSequence("src/samples/072 Chorus Ride 16ths F6.mid");
-
+    Sequence sequence = player.getSequence("src/samples/072ChorusRide16thsF6b.mid");
+    sequence.createTrack();
     
 
     // turn off the drums
     System.out.println("Playing (without drums)...");
     Sequencer sequencer = player.getSequencer();
     sequencer.setTempoInBPM(tempo);
+    
+    try {
+		sequencer.setSequence(sequence);
+	} catch (InvalidMidiDataException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
+    try {
+		sequencer.open();
+	} catch (MidiUnavailableException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    sequencer.setTempoInBPM(tempo);
+    
     //sequencer.setTrackMute(DRUM_TRACK, false);
-    //sequencer.addMetaEventListener(this);
+    sequencer.addMetaEventListener(this);
     
  // play the sequence
-    player.play(sequence, true);
+    sequencer.setTempoInBPM(tempo);
+    player.setBPMs(tempo);
+    player.play(sequence, false);
   }
 
   /**
@@ -97,6 +117,12 @@ class MidiPlayer implements MetaEventListener {
   public static final int END_OF_TRACK_MESSAGE = 47;
 
   private Sequencer sequencer;
+  
+  public float tempo;
+  
+  public void setBPMs(float beatsPerMinute){
+	  tempo = beatsPerMinute;
+  }
 
   private boolean loop;
 
@@ -110,6 +136,7 @@ class MidiPlayer implements MetaEventListener {
       sequencer = MidiSystem.getSequencer();
       sequencer.open();
       sequencer.addMetaEventListener(this);
+      sequencer.setTempoInBPM(tempo);
     } catch (MidiUnavailableException ex) {
       sequencer = null;
     }
@@ -155,16 +182,27 @@ class MidiPlayer implements MetaEventListener {
     if (sequencer != null && sequence != null && sequencer.isOpen()) {
       try {
         sequencer.setSequence(sequence);
-        if(loop) {
+        sequencer.open();
+        sequencer.setTempoInBPM(tempo);
+        /*if(loop) {
             sequencer.setLoopStartPoint(0);
             sequencer.setLoopEndPoint(-1);
             sequencer.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
-        }
+            sequencer.setTempoInBPM(tempo);
+        }*/
+        //sequencer.setTempoFactor(1.0F);
+        sequencer.setTempoInBPM(tempo);
         sequencer.start();
+        //sequencer.setTempoFactor(1.0F);
+        sequencer.setTempoInBPM(tempo);
+        
         this.loop = loop;
       } catch (InvalidMidiDataException ex) {
         ex.printStackTrace();
-      }
+      } catch (MidiUnavailableException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
     }
   }
 
@@ -176,7 +214,10 @@ class MidiPlayer implements MetaEventListener {
   public void meta(MetaMessage event) {
     if (event.getType() == END_OF_TRACK_MESSAGE) {
       if (sequencer != null && sequencer.isOpen() && loop) {
+    	sequencer.setMicrosecondPosition(0);
+    	sequencer.setTempoInBPM(tempo);
         sequencer.start();
+        sequencer.setTempoInBPM(tempo);
       }
     }
   }
@@ -188,6 +229,7 @@ class MidiPlayer implements MetaEventListener {
     if (sequencer != null && sequencer.isOpen()) {
       sequencer.stop();
       sequencer.setMicrosecondPosition(0);
+      sequencer.setTempoInBPM(tempo);
     }
   }
 
