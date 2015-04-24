@@ -1,138 +1,29 @@
-/*
-DEVELOPING GAME IN JAVA 
-
-Caracteristiques
-
-Editeur : NEW RIDERS 
-Auteur : BRACKEEN 
-Parution : 09 2003 
-Pages : 972 
-Isbn : 1-59273-005-1 
-Reliure : Paperback 
-Disponibilite : Disponible a la librairie 
- */
-
-
+package uk.ac.brighton.jamss;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MetaEventListener;
-import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
-import javax.sound.midi.Track;
-
-/**
- * An example that plays a Midi sequence. First, the sequence is played once
- * with track 1 turned off. Then the sequence is played once with track 1 turned
- * on. Track 1 is the drum track in the example midi file.
- */
-public class MidiTest implements MetaEventListener {
-
-	// The drum track in the example Midi file
-	private static final int DRUM_TRACK = 1;
-	public float tempo = 72;
-	String beat = "";
 
 
-	/*public static void main(String[] args) {
-    new MidiTest().run();
-  }*/
-
-	public MidiPlayer player;
-
-	public void setBPM(int beatsPerMinute){
-		tempo = beatsPerMinute;
-
-	}
-
-	public void setBeat(String track){
-		beat = track;
-
-	}
-
-
-	public void run() {
-
-		player = new MidiPlayer();
-
-		// load a sequence
-		Sequence sequence = player.getSequence("src/samples/072ChorusRide16thsF6b.mid");
-		sequence.createTrack();
-
-
-		// turn off the drums
-		System.out.println("Playing (without drums)...");
-		Sequencer sequencer = player.getSequencer();
-		sequencer.setTempoInBPM(tempo);
-
-		try {
-			sequencer.setSequence(sequence);
-		} catch (InvalidMidiDataException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			sequencer.open();
-		} catch (MidiUnavailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		sequencer.setTempoInBPM(tempo);
-
-		//sequencer.setTrackMute(DRUM_TRACK, false);
-		sequencer.addMetaEventListener(this);
-
-		// play the sequence
-		sequencer.setTempoInBPM(tempo);
-		player.setBPMs(tempo);
-		player.play(sequence, false);
-	}
-
-	/**
-	 * This method is called by the sound system when a meta event occurs. In
-	 * this case, when the end-of-track meta event is received, the drum track
-	 * is turned on.
-	 */
-	public void meta(MetaMessage event) {
-		if (event.getType() == MidiPlayer.END_OF_TRACK_MESSAGE) {
-			Sequencer sequencer = player.getSequencer();
-			/*if (sequencer.getTrackMute(DRUM_TRACK)) {
-        // turn on the drum track
-        System.out.println("Turning on drums...");
-        sequencer.setTrackMute(DRUM_TRACK, false);
-      } else {
-        // close the sequencer and exit
-        System.out.println("End of loop...");
-        //player.close();
-        //System.exit(0);
-      }*/
-		}
-	}
-
-}
-
-class MidiPlayer implements MetaEventListener {
+class MidiPlayer {
 
 	// Midi meta event
 	public static final int END_OF_TRACK_MESSAGE = 47;
 
 	private Sequencer sequencer;
-
 	public float tempo;
-
+	private boolean loop;
+	public boolean paused;
+	
 	public void setBPMs(float beatsPerMinute){
 		tempo = beatsPerMinute;
 	}
-
-	private boolean loop;
-
-	public boolean paused;
 
 	/**
 	 * Creates a new MidiPlayer object.
@@ -141,7 +32,7 @@ class MidiPlayer implements MetaEventListener {
 		try {
 			sequencer = MidiSystem.getSequencer();
 			sequencer.open();
-			sequencer.addMetaEventListener(this);
+			//sequencer.addMetaEventListener(this);
 			sequencer.setTempoInBPM(tempo);
 		} catch (MidiUnavailableException ex) {
 			sequencer = null;
@@ -217,7 +108,7 @@ class MidiPlayer implements MetaEventListener {
 	 * this case, when the end-of-track meta event is received, the sequence is
 	 * restarted if looping is on.
 	 */
-	public void meta(MetaMessage event) {
+	/*public void meta(MetaMessage event) {
 		if (event.getType() == END_OF_TRACK_MESSAGE) {
 			if (sequencer != null && sequencer.isOpen() && loop) {
 				sequencer.setMicrosecondPosition(0);
@@ -226,7 +117,7 @@ class MidiPlayer implements MetaEventListener {
 				sequencer.setTempoInBPM(tempo);
 			}
 		}
-	}
+	}*/
 
 	/**
 	 * Stops the sequencer and resets its position to 0.

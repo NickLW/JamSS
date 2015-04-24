@@ -1,3 +1,4 @@
+package uk.ac.brighton.jamss;
 
 public class Scale {
 

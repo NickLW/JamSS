@@ -1,3 +1,4 @@
+package uk.ac.brighton.jamss;
 
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiDevice;
