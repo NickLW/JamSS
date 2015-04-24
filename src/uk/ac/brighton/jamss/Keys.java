@@ -10,8 +10,8 @@ import javax.sound.midi.Synthesizer;
 //import org.apache.log4j.Logger;
 
 /**
- * A metronome.
- * @author  Dave Briccetti
+ * 
+ * 
  */
 public class Keys {
 
@@ -20,19 +20,9 @@ public class Keys {
 	private final Runnable runnable = createRunnable();
 	private MidiChannel channel = null;
 	public int note;
-	public int currNote = 30;
 	public int count = 1;
 	public int barCount = 0;
-	private static String scale = "Minor";
-	private static String root = "E";
 	public long sleepTime;
-
-	private static double[] MAJFREQUENCIES = Scale.getFreq(root, scale);
-	private static String[] MAJNAME        = Scale.getScale(root, scale);
-
-	public static void main(String[] args) {
-
-	}
 
 	/** Creates new form Metronome */
 	public Keys() {
@@ -72,27 +62,22 @@ public class Keys {
 		}
 	}
 
+	/**
+	 * Plays an arpeggio of notes using the time frame given by the metronome
+	 * at 16th note lengths. The notes to be played are set from the chosen
+	 * root note.
+	 * @return
+	 */
 	private Runnable createRunnable() {
 		return new Runnable() {
 
 			public void run() {
-
-				long wokeLateOrEarlyBy = 0;
-				boolean played = false;
 				int octaves = 12;
 
 				while (count < 5) {
-
 					// Someone could change note while we sleep. Make sure we 
 					// turn on and off the same note.
 					final int noteForThisBeat = note; 
-
-					System.out.println ("late(+)/early(-): " + wokeLateOrEarlyBy);
-
-					/*THIS BIT IS SORTING WHAT THE GUITARS PLAY AND WHEN!!*/
-
-					MAJFREQUENCIES = Scale.getFreq(root, scale);
-					MAJNAME        = Scale.getScale(root, scale); 
 
 					if (count == 1) {
 						//channel.noteOn(noteForThisBeat - octaves, velocity);
@@ -108,20 +93,12 @@ public class Keys {
 						count ++;
 					}
 
-
-					final long currentTimeBeforeSleep = System.currentTimeMillis();
-					//correct time to sleep by previous error, to keep the overall tempo
-					//sleepTime = (timeBetweenBeats - wokeLateOrEarlyBy) / 4;
-					final long expectedWakeTime = currentTimeBeforeSleep + sleepTime;
-
 					try {
 						Thread.sleep(sleepTime);
 
 					} catch (InterruptedException ex) {
 						// log.debug("Interrupted");
 					}
-
-					wokeLateOrEarlyBy = System.currentTimeMillis() - expectedWakeTime;
 
 					channel.noteOff(noteForThisBeat - octaves);
 					channel.noteOff((noteForThisBeat + 4) - octaves);
@@ -134,12 +111,14 @@ public class Keys {
 		};
 	}
 
+	/**
+	 * Starts the thread
+	 */
 	void startThread() {
 		if (channel != null) {
-			thread = new Thread(runnable, "Metronome");
+			thread = new Thread(runnable, "Keys");
 			thread.setPriority(Thread.MAX_PRIORITY);
 			thread.start();
 		}
 	}
-
 }

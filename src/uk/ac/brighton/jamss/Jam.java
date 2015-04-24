@@ -44,7 +44,6 @@ import be.tarsos.dsp.util.fft.FFT;
  */
 public class Jam extends JFrame implements PitchDetectionHandler {
 
-
 	private static final long serialVersionUID = 1383896180290138076L;
 	private final SpectrogramPanel panel;
 	private final MetronomePanel metPanel;

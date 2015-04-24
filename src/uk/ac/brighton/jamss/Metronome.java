@@ -26,14 +26,12 @@ public class Metronome {
 	private MidiChannel channel = null;
 	private boolean keepPlaying;
 	private int note;
-	private int lead = 6;
 	private int currNote = 64;
 	private int rootNote = 64;
 	public DrumTrack drums = new DrumTrack();
 	private static Keys keys = new Keys();
 	private static Lead lead1 = new Lead();
 	boolean drumsOn = false;
-	boolean keysOn = false;
 	private int count = 1;
 	private int barCount = 0;
 	private static String scale = "Minor";
@@ -42,17 +40,6 @@ public class Metronome {
 	private static double[] FREQUENCIES = Scale.getFreq(root, scale);
 	private static String[] NAME        = Scale.getScale(root, scale);
 
-	public static void main(String[] args) {
-		/*JFrame f = new JFrame("Settings");
-		final JPanel met = new Metronome();
-		met.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		f.getContentPane().add(met, BorderLayout.CENTER);
-		f.pack();
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setLocationRelativeTo(null);
-		f.setVisible(true);*/
-
-	}
 
 	/** Creates new form Metronome */
 	public Metronome() {
@@ -66,20 +53,12 @@ public class Metronome {
 			device = MidiSystem.getMidiDevice(midiDeviceInfoArray[1]);
 			final Synthesizer synthesizer = MidiSystem.getSynthesizer();
 			synthesizer.open();
-			//synthesizer.loadAllInstruments(synthesizer.getDefaultSoundbank());
 			channel = synthesizer.getChannels()[1];
-			//channel.programChange(0, lead);
-			//Instrument[] instr = synthesizer.getDefaultSoundbank().getInstruments();
-			//System.out.println(instr[lead]);
-			//synthesizer.loadInstrument(instr[lead]);
 
 		} catch (MidiUnavailableException ex) {
 			//log.error(ex);
 		}
-		//initComponents();
 		setTempo(72);
-		//setScaleFromChoice();
-		//metronomeButton.requestFocus();
 	}
 
 	/**
@@ -88,8 +67,6 @@ public class Metronome {
 	 */
 	public void setTempo(int beatsPerMinute) {
 		processTempoChange(beatsPerMinute);
-		//tempoChooser.setValue(beatsPerMinute);
-
 	}
 
 	/**
@@ -228,7 +205,6 @@ public class Metronome {
 		return new Runnable() {
 
 			public void run() {
-
 				long wokeLateOrEarlyBy = 0;
 
 				while (keepPlaying) {
@@ -238,7 +214,6 @@ public class Metronome {
 					final long sleepTime = timeBetweenBeats - wokeLateOrEarlyBy;
 					System.out.println ("late(+)/early(-): " + wokeLateOrEarlyBy);
 
-					/*THIS BIT IS SORTING WHAT THE GUITARS PLAY AND WHEN!!*/
 					FREQUENCIES = Scale.getFreq(root, scale);
 					NAME        = Scale.getScale(root, scale);
 
@@ -253,14 +228,18 @@ public class Metronome {
 
 					if (count % 2 == 0) {
 						startLead(note, sleepTime);
-						count ++;
-					} else {
-						count ++;
 					}
+					
+					count ++;
 
 					if(count > 4){
 						count = 1;
 						barCount ++;
+					}
+					
+					if (barCount == 8 && count == 1){
+						barCount = 0;
+						drumsOn = false;
 					}
 
 					final long currentTimeBeforeSleep = System.currentTimeMillis();
@@ -275,11 +254,6 @@ public class Metronome {
 					}
 					
 					wokeLateOrEarlyBy = System.currentTimeMillis() - expectedWakeTime;
-
-					if (barCount != 0 && barCount % 8 == 0 && count == 1){
-						//barCount = 1;
-						drumsOn = false;
-					}
 
 					stopKeys();
 					stopLead();
@@ -403,5 +377,4 @@ public class Metronome {
 	public static void stopLead() {
 		lead1.stop();	
 	}
-
 }

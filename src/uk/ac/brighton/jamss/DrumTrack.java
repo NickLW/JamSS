@@ -25,29 +25,29 @@ import javax.sound.midi.Sequencer;
  * on. Track 1 is the drum track in the example midi file.
  */
 public class DrumTrack {
-
-	// The drum track in the example Midi file
-	private static final int DRUM_TRACK = 1;
 	public float tempo = 72;
 	private String beat = "src/samples/072ChorusRide16thsF6b.mid";
-
-
-	/*public static void main(String[] args) {
-    new MidiTest().run();
-  	}*/
-
 	public MidiPlayer player;
 
+	/**
+	 * Sets the speed of the sequence
+	 * @param beatsPerMinute
+	 */
 	public void setBPM(int beatsPerMinute){
 		tempo = beatsPerMinute;
-
 	}
 
+	/**
+	 * Sets the .midi file to use for the drum sequence
+	 * @param track
+	 */
 	public void setBeat(String track){
 		beat = track;
-
 	}
 	
+	/**
+	 * 
+	 */
 	public void run() {
 
 		player = new MidiPlayer();
@@ -55,12 +55,7 @@ public class DrumTrack {
 		// load a sequence
 		Sequence sequence = player.getSequence(beat);
 		sequence.createTrack();
-
-
-		// turn off the drums
-		System.out.println("Playing (without drums)...");
 		Sequencer sequencer = player.getSequencer();
-		sequencer.setTempoInBPM(tempo);
 
 		try {
 			sequencer.setSequence(sequence);
@@ -74,10 +69,6 @@ public class DrumTrack {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		sequencer.setTempoInBPM(tempo);
-
-		//sequencer.setTrackMute(DRUM_TRACK, false);
-		//sequencer.addMetaEventListener(this);
 
 		// play the sequence
 		sequencer.setTempoInBPM(tempo);

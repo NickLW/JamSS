@@ -162,7 +162,6 @@ public class MetronomePanel extends JPanel {
 		} else {
 			metronome.drums.stop();
 			metronome.drumsOn = false;
-			metronome.keysOn = false;
 			metronome.stop();
 		}
 
@@ -190,7 +189,6 @@ public class MetronomePanel extends JPanel {
 			if (metronome.drumsOn){
 				metronome.drums.player.stop();
 				metronome.drumsOn = false;
-				metronome.keysOn = false;
 				metronome.stop();
 			}
 			setMetronomeButtonText(tempo);

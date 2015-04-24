@@ -21,20 +21,7 @@ public class Lead {
 	private boolean keepPlaying;
 	public int note;
 	public int lead = 26;
-	public int currNote = 64;
-	public int rootNote = 64;
-	public DrumTrack drums = new DrumTrack();
-	boolean drumsOn = false;
-	boolean keysOn = false;
-	public int count = 1;
-	public int barCount = 0;
 	public long sleepTime;
-
-
-	public static void main(String[] args) {
-
-
-	}
 
 	/** Creates new form Metronome */
 	public Lead() {
@@ -61,8 +48,12 @@ public class Lead {
 		this.note = note;
 	}
 
-	public void setLead(int note) {
-		this.lead = note;
+	/**
+	 * Sets the MIDI instrument to be played
+	 * @param instr
+	 */
+	public void setLead(int instr) {
+		this.lead = instr;
 		this.channel.programChange(0, lead);
 	}
 
@@ -75,48 +66,32 @@ public class Lead {
 		if (thread != null) {
 			thread.interrupt(); // Interrupt the sleep
 		}
-		count = 1;
-		barCount = 0;
 	}
 
+	/**
+	 * Runnable that plays a chord of 3 MIDI notes for the length of
+	 * 1 whole metronome beat.
+	 * @return
+	 */
 	private Runnable createRunnable() {
 		return new Runnable() {
 
 			public void run() {
-
-
-				long wokeLateOrEarlyBy = 0;
 				int octaves = 12;
 
 				while (keepPlaying) {
 					final int noteForThisBeat = note;
-					//sleepTime = timeBetweenBeats - wokeLateOrEarlyBy;
-					System.out.println ("late(+)/early(-): " + wokeLateOrEarlyBy);
-
-					/*THIS BIT IS SORTING WHAT THE GUITARS PLAY AND WHEN!!*/
 
 					channel.noteOn(noteForThisBeat - octaves, velocity);
 					channel.noteOn((noteForThisBeat + 4) - octaves, velocity);
 					channel.noteOn((noteForThisBeat + 7) - octaves, velocity);
-					count ++;
-
-					if(count > 4){
-						count = 1;
-						barCount ++;
-					}
-
-					final long currentTimeBeforeSleep = System.currentTimeMillis();
-					//correct time to sleep by previous error, to keep the overall tempo
-
-					final long expectedWakeTime = currentTimeBeforeSleep + sleepTime;
-
+					
 					try {
 						Thread.sleep(sleepTime+1);
 
 					} catch (InterruptedException ex) {
 						// log.debug("Interrupted");
 					}
-					wokeLateOrEarlyBy = System.currentTimeMillis() - expectedWakeTime;
 
 					channel.noteOff(noteForThisBeat - octaves);
 					channel.noteOff((noteForThisBeat + 4) - octaves);
@@ -127,15 +102,17 @@ public class Lead {
 		};
 	}
 
+	/**
+	 * Starts the thread
+	 */
 	void startThread() {
 		if (channel != null) {
 			keepPlaying = true;
-			thread = new Thread(runnable, "Metronome");
+			thread = new Thread(runnable, "Lead");
 			thread.setPriority(Thread.MAX_PRIORITY);
 			thread.start();
 		}
 	}
-
 }
 
 
