@@ -21,6 +21,8 @@ public class Lead {
 	private boolean keepPlaying;
 	public int note;
 	public int lead = 26;
+	private int octaves = 12;
+	private int noteForThisBeat;
 	public long sleepTime;
 
 	/** Creates new form Metronome */
@@ -77,10 +79,9 @@ public class Lead {
 		return new Runnable() {
 
 			public void run() {
-				int octaves = 12;
-
+				
 				while (keepPlaying) {
-					final int noteForThisBeat = note;
+					noteForThisBeat = note;
 
 					channel.noteOn(noteForThisBeat - octaves, velocity);
 					channel.noteOn((noteForThisBeat + 4) - octaves, velocity);

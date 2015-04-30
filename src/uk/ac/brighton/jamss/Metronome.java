@@ -192,6 +192,8 @@ public class Metronome {
 		if (thread != null) {
 			thread.interrupt(); // Interrupt the sleep
 		}
+		drums.stop();
+		drumsOn = false;
 		count = 1;
 		barCount = 0;
 	}

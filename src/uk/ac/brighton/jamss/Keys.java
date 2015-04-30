@@ -22,6 +22,9 @@ public class Keys {
 	public int note;
 	public int count = 1;
 	public int barCount = 0;
+	private int octaves = 12;				//used to change pitch of midi note
+	private int noteForThisBeat; 
+	double rndNote;
 	public long sleepTime;
 
 	/** Creates new form Metronome */
@@ -72,27 +75,28 @@ public class Keys {
 		return new Runnable() {
 
 			public void run() {
-				int octaves = 12;
+				
 
 				while (count < 5) {
 					// Someone could change note while we sleep. Make sure we 
 					// turn on and off the same note.
-					final int noteForThisBeat = note; 
-
-					if (count == 1) {
-						//channel.noteOn(noteForThisBeat - octaves, velocity);
-						count ++;
-					} else if(count == 2){
-						channel.noteOn((noteForThisBeat + 2) - octaves, velocity);
-						count ++;
-					} else if(count == 3){
-						channel.noteOn((noteForThisBeat + 4) - octaves, velocity);
-						count ++;
-					} else if(count == 4){
-						channel.noteOn((noteForThisBeat + 7) - octaves, velocity);
-						count ++;
+					noteForThisBeat = note; 
+					rndNote = Math.random();
+					
+					if (rndNote < 0.34){
+						noteForThisBeat += 2;
+					} else if (rndNote < 0.67){
+						noteForThisBeat += 4;
+					} else {
+						noteForThisBeat += 7;
 					}
 
+					if(count > 1){
+						channel.noteOn(noteForThisBeat - octaves, velocity);
+					}
+
+					count ++;
+					
 					try {
 						Thread.sleep(sleepTime);
 
@@ -101,8 +105,6 @@ public class Keys {
 					}
 
 					channel.noteOff(noteForThisBeat - octaves);
-					channel.noteOff((noteForThisBeat + 4) - octaves);
-					channel.noteOff((noteForThisBeat + 7) - octaves);
 
 				}
 				// log.debug("Thread ending");

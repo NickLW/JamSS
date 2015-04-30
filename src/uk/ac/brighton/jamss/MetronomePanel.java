@@ -10,9 +10,20 @@ import javax.swing.JSlider;
 /**
  * 
  * @author Nick Walker
- * This class provides the GUI for the metronome
+ * This class provides the GUI for the metronome. Each of the 'chooser' boxes
+ * takes a list generated from it's associated 'choice' class and passes the
+ * user selection onto the metronome.
  */
 public class MetronomePanel extends JPanel {
+	private static final long serialVersionUID = -8405027332103503281L;
+	// Variables declaration - do not modify//GEN-BEGIN:variables
+	private javax.swing.JToggleButton metronomeButton;
+	private javax.swing.JComboBox scaleChooser;
+	private javax.swing.JComboBox rootChooser;
+	private javax.swing.JComboBox drumChooser;
+	private javax.swing.JComboBox leadChooser;
+	private javax.swing.JSlider tempoChooser;
+	// End of variables declaration//GEN-END:variables
 	
 	private Metronome metronome = new Metronome();
 	
@@ -122,7 +133,7 @@ public class MetronomePanel extends JPanel {
 		add(drumChooser, gridBagConstraints);
 
 		//FOR LEAD
-		leadChooser.setModel(new javax.swing.DefaultComboBoxModel(LeadSound.getSounds()));
+		leadChooser.setModel(new javax.swing.DefaultComboBoxModel(LeadChoice.getSounds()));
 		leadChooser.setToolTipText("Select the sound to use");
 		leadChooser.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -160,8 +171,6 @@ public class MetronomePanel extends JPanel {
 		if (metronomeButton.isSelected()) {
 			metronome.startThread();
 		} else {
-			metronome.drums.stop();
-			metronome.drumsOn = false;
 			metronome.stop();
 		}
 
@@ -180,7 +189,7 @@ public class MetronomePanel extends JPanel {
 	}//GEN-LAST:event_soundChooserActionPerformed
 
 	private void leadChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_soundChooserActionPerformed
-		metronome.setLeadFromChoice(((LeadSound)leadChooser.getSelectedItem()).getMidiNote());
+		metronome.setLeadFromChoice(((LeadChoice)leadChooser.getSelectedItem()).getMidiNote());
 	}//GEN-LAST:event_soundChooserActionPerformed
 
 	private void tempoChooserStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tempoChooserStateChanged
@@ -207,14 +216,4 @@ public class MetronomePanel extends JPanel {
 	public void setMetronome(Metronome metronome) {
 		this.metronome = metronome;
 	}
-
-	// Variables declaration - do not modify//GEN-BEGIN:variables
-	private javax.swing.JToggleButton metronomeButton;
-	private javax.swing.JComboBox scaleChooser;
-	private javax.swing.JComboBox rootChooser;
-	private javax.swing.JComboBox drumChooser;
-	private javax.swing.JComboBox leadChooser;
-	private javax.swing.JSlider tempoChooser;
-	// End of variables declaration//GEN-END:variables
-
 }

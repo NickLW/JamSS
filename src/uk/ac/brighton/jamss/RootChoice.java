@@ -1,12 +1,26 @@
 package uk.ac.brighton.jamss;
 
+/**
+ * This class creates the choices available to the user for the 
+ * root note.
+ * @author Nick Walker
+ *
+ */
 class RootChoice {
 	private final String rname;
 
+	/** 
+	 * Constructor
+	 * @param name
+	 */
 	public RootChoice(String name) {
 		this.rname = name;
 	}
 
+	/**
+	 * Getter for name
+	 * @return
+	 */
 	public String getName() {
 		return rname;
 	}
@@ -16,6 +30,10 @@ class RootChoice {
 		return rname;
 	}
 	
+	/**
+	 * Getter for populating list of choices in GUI
+	 * @return
+	 */
 	public static RootChoice[] getRChoice() {
 		return new RootChoice[] {
 				new RootChoice("E"),
