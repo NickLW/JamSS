@@ -7,11 +7,10 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Synthesizer;
 
-//import org.apache.log4j.Logger;
-
 /**
- * 
- * 
+ * This class creates a midi synthesiser and turns notes on
+ * and off, sleeping a thread for timing.
+ * @author Nick Walker
  */
 public class Keys {
 
@@ -27,12 +26,14 @@ public class Keys {
 	double rndNote;
 	public long sleepTime;
 
-	/** Creates new form Metronome */
+	/** 
+	 * Constructor
+	 */
 	public Keys() {
 		try {
 			final Synthesizer synthesizer = MidiSystem.getSynthesizer();
 			synthesizer.open();
-			channel = synthesizer.getChannels()[3];
+			channel = synthesizer.getChannels()[1];
 			channel.programChange(0, 1);
 			Instrument[] instr = synthesizer.getDefaultSoundbank().getInstruments();
 			System.out.println(instr[1]);
@@ -46,8 +47,8 @@ public class Keys {
 
 
 	/**
-	 * Sets the MIDI note, in the percussion channel, to use for the 
-	 * metronome sound. See http://en.wikipedia.org/wiki/General_MIDI. 
+	 * Sets the MIDI root note, to use for deciding which
+	 * notes are played
 	 * @param note the MIDI note to use
 	 */
 	public void setNote(int note) {
@@ -56,7 +57,7 @@ public class Keys {
 
 
 	/**
-	 * Stops the metronome.
+	 * Stops the Keys.
 	 */
 	public void stop() {
 		//keepPlaying = false;
@@ -66,10 +67,9 @@ public class Keys {
 	}
 
 	/**
-	 * Plays an arpeggio of notes using the time frame given by the metronome
+	 * Plays an arpeggio of notes using the time frame given by the Band
 	 * at 16th note lengths. The notes to be played are set from the chosen
 	 * root note.
-	 * @return
 	 */
 	private Runnable createRunnable() {
 		return new Runnable() {

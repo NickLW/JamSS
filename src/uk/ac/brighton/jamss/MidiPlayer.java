@@ -10,7 +10,11 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 
-
+/**
+ * Creates a sequencer used to play a percussion sequence taken
+ * from a .midi file.
+ * @author Nick Walker
+ */
 class MidiPlayer {
 
 	// Midi meta event
@@ -33,7 +37,6 @@ class MidiPlayer {
 			sequencer = MidiSystem.getSequencer();
 			sequencer.open();
 			//sequencer.addMetaEventListener(this);
-			sequencer.setTempoInBPM(tempo);
 		} catch (MidiUnavailableException ex) {
 			sequencer = null;
 		}
@@ -80,18 +83,15 @@ class MidiPlayer {
 			try {
 				sequencer.setSequence(sequence);
 				sequencer.open();
-				sequencer.setTempoInBPM(tempo);
 				/*if(loop) {
-            sequencer.setLoopStartPoint(0);
-            sequencer.setLoopEndPoint(-1);
-            sequencer.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
-            sequencer.setTempoInBPM(tempo);
-        }*/
-				//sequencer.setTempoFactor(1.0F);
+            		sequencer.setLoopStartPoint(0);
+            		sequencer.setLoopEndPoint(-1);
+            		sequencer.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
+            		sequencer.setTempoInBPM(tempo);
+        		}*/
+
 				sequencer.setTempoInBPM(tempo);
 				sequencer.start();
-				//sequencer.setTempoFactor(1.0F);
-				sequencer.setTempoInBPM(tempo);
 
 				this.loop = loop;
 			} catch (InvalidMidiDataException ex) {
@@ -114,19 +114,18 @@ class MidiPlayer {
 				sequencer.setMicrosecondPosition(0);
 				sequencer.setTempoInBPM(tempo);
 				sequencer.start();
-				sequencer.setTempoInBPM(tempo);
 			}
 		}
 	}*/
 
 	/**
-	 * Stops the sequencer and resets its position to 0.
+	 * Stops the sequencer and resets its position to the 
+	 * start of the sequence.
 	 */
 	public void stop() {
 		if (sequencer != null && sequencer.isOpen()) {
 			sequencer.stop();
 			sequencer.setMicrosecondPosition(0);
-			sequencer.setTempoInBPM(tempo);
 		}
 	}
 
@@ -166,6 +165,4 @@ class MidiPlayer {
 	public boolean isPaused() {
 		return paused;
 	}
-
-
 }

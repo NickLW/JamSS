@@ -1,33 +1,17 @@
 package uk.ac.brighton.jamss;
-/*
-DEVELOPING GAME IN JAVA 
 
-Caracteristiques
-
-Editeur : NEW RIDERS 
-Auteur : BRACKEEN 
-Parution : 09 2003 
-Pages : 972 
-Isbn : 1-59273-005-1 
-Reliure : Paperback 
-Disponibilite : Disponible a la librairie 
- */
-
-
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
-import javax.sound.midi.Sequencer;
 
 /**
- * An example that plays a Midi sequence. First, the sequence is played once
- * with track 1 turned off. Then the sequence is played once with track 1 turned
- * on. Track 1 is the drum track in the example midi file.
+ * This class creates a MidiPlayer and controls which
+ * sequence to play. It contains methods to start and stop
+ * the MidiPlayer.
+ * @author Nick Walker
  */
 public class DrumTrack {
 	public float tempo = 72;
 	private String beat = "src/samples/072ChorusRide16thsF6b.mid";
-	public MidiPlayer player;
+	private MidiPlayer player;
 
 	/**
 	 * Sets the speed of the sequence
@@ -46,7 +30,7 @@ public class DrumTrack {
 	}
 	
 	/**
-	 * 
+	 * Loads the sequence, sets the tempo and begins play.
 	 */
 	public void run() {
 
@@ -55,23 +39,8 @@ public class DrumTrack {
 		// load a sequence
 		Sequence sequence = player.getSequence(beat);
 		sequence.createTrack();
-		Sequencer sequencer = player.getSequencer();
-
-		try {
-			sequencer.setSequence(sequence);
-		} catch (InvalidMidiDataException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			sequencer.open();
-		} catch (MidiUnavailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		// play the sequence
-		sequencer.setTempoInBPM(tempo);
 		player.setBPMs(tempo);
 		player.play(sequence, false);
 	}

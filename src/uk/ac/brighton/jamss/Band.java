@@ -1,34 +1,25 @@
 package uk.ac.brighton.jamss;
 
-import javax.sound.midi.MidiChannel;
-import javax.sound.midi.MidiDevice;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Synthesizer;
-
-//import org.apache.log4j.Logger;
-
 /**
- * This class keeps the overall timing for the session by sleeping a thread
- * and creates each instrument, deciding when they should play. Also keeps 
- * track of current note and settings which are passed on to instruments.
+ * This class keeps the overall timing for the session by sleeping a thread.
+ * It creates each instrument, deciding when they should play. Also keeps 
+ * track of current input note and settings which are passed on to instruments.
+ * @author Nick Walker
  * 
  * Class originally based on:
  * A metronome.
  * @author  Dave Briccetti
  */
-public class Metronome {
+public class Band {
 
-	//static Logger log = Logger.getLogger(Metronome.class);
 	private Thread thread; // New thread each time the metronome is turned on
 	private final Runnable runnable = createRunnable();
 	private long timeBetweenBeats;
-	private MidiChannel channel = null;
 	private boolean keepPlaying;
 	private int note;
 	private int currNote = 64;
 	private int rootNote = 64;
-	public DrumTrack drums = new DrumTrack();
+	private DrumTrack drums = new DrumTrack();
 	private static Keys keys = new Keys();
 	private static Lead lead1 = new Lead();
 	boolean drumsOn = false;
@@ -41,28 +32,15 @@ public class Metronome {
 	private static String[] NAME        = Scale.getScale(root, scale);
 
 
-	/** Creates new form Metronome */
-	public Metronome() {
-		
-		/**
-		 * Create a Midi device
-		 */
-		try {
-			MidiDevice.Info[] midiDeviceInfoArray = MidiSystem.getMidiDeviceInfo();
-			MidiDevice device;
-			device = MidiSystem.getMidiDevice(midiDeviceInfoArray[1]);
-			final Synthesizer synthesizer = MidiSystem.getSynthesizer();
-			synthesizer.open();
-			channel = synthesizer.getChannels()[1];
-
-		} catch (MidiUnavailableException ex) {
-			//log.error(ex);
-		}
+	/** 
+	 * Band constructor
+	 */
+	public Band() {
 		setTempo(72);
 	}
 
 	/**
-	 * Sets the tempo. May be called while the metronome is on.
+	 * Sets the tempo. May be called while the Band is running.
 	 * @param beatsPerMinute the tempo, in beats per minute
 	 */
 	public void setTempo(int beatsPerMinute) {
@@ -80,7 +58,7 @@ public class Metronome {
 
 	/**
 	 * Sets currNote to a midi note value that matches the pitch
-	 * @param pitch
+	 * @param pitch the frequency as a double
 	 */
 	public void setCurrNote(double pitch){
 		if (pitch != -1) {
@@ -116,44 +94,12 @@ public class Metronome {
 		}
 	}
 
-	/**
-	 * Sets the rootnote to a midi value that matches the given note.
-	 * @param note
-	 */
-	public void setCurrNote(String note){
-
-		if (note == "F"){
-			this.rootNote = 65;
-		} else if (note == "E"){
-			this.rootNote = 64;
-		} else if (note == "D#"){
-			this.rootNote = 63;
-		} else if (note == "D"){
-			this.rootNote = 62;
-		} else if (note == "C#"){
-			this.rootNote = 61;
-		} else if (note == "C"){
-			this.rootNote = 60;
-		} else if (note == "B"){
-			this.rootNote = 71;
-		} else if (note == "A#"){
-			this.rootNote = 70;
-		} else if (note == "A"){
-			this.rootNote = 69;
-		} else if (note == "G#"){
-			this.rootNote = 68;
-		} else if (note == "G"){
-			this.rootNote = 67;
-		} else if (note == "F#"){
-			this.rootNote = 66;
-		} 
-	}
 
 	/**
 	 * Ensures that the frequency of the input falls within the bounds of the 
 	 * scale being used.
-	 * @param hz
-	 * @return
+	 * @param hz frequency as a double
+	 * @return hz
 	 */
 	private static double normaliseFreq(double hz) {
 		// get hz into a standard range to make things easier to deal with
@@ -168,8 +114,8 @@ public class Metronome {
 
 	/**
 	 * Matches the frequency to the closest note in the scale
-	 * @param hz
-	 * @return
+	 * @param hz frequency as double
+	 * @return hz
 	 */
 	private static int closestNote(double hz) {
 		double minDist = Double.MAX_VALUE;
@@ -185,7 +131,8 @@ public class Metronome {
 	}
 
 	/**
-	 * Stops the metronome.
+	 * Stops the Band and drum sequence 
+	 * and resets counters ready to start again.
 	 */
 	public void stop() {
 		keepPlaying = false;
@@ -210,11 +157,11 @@ public class Metronome {
 				long wokeLateOrEarlyBy = 0;
 
 				while (keepPlaying) {
+					
 					setNote(currNote);
-					// Someone could change note while we sleep. Make sure we 
-					// turn on and off the same note.
+					
 					final long sleepTime = timeBetweenBeats - wokeLateOrEarlyBy;
-					System.out.println ("late(+)/early(-): " + wokeLateOrEarlyBy);
+					//System.out.println ("late(+)/early(-): " + wokeLateOrEarlyBy);
 
 					FREQUENCIES = Scale.getFreq(root, scale);
 					NAME        = Scale.getScale(root, scale);
@@ -224,7 +171,7 @@ public class Metronome {
 						drumsOn = true;
 					}
 
-					if ((count + 1) % 2 == 0) {
+					if (count % 2 != 0) {
 						startKeys(rootNote, sleepTime);
 					}
 
@@ -275,15 +222,13 @@ public class Metronome {
 	}
 
 	/**
-	 * Starts the metronome thread
+	 * Starts the Band thread
 	 */
 	void startThread() {
-		if (channel != null) {
 			keepPlaying = true;
-			thread = new Thread(runnable, "Metronome");
+			thread = new Thread(runnable, "Band");
 			thread.setPriority(Thread.MAX_PRIORITY);
 			thread.start();
-		}
 	}
 
 	/**
@@ -295,7 +240,8 @@ public class Metronome {
 	}
 
 	/**
-	 * Sets the root note selected from GUI
+	 * Sets the rootnote to a midi value that matches the
+	 * note selected from GUI.
 	 * @param choice
 	 */
 	void setRootFromChoice(String choice) {

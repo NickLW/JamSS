@@ -15,18 +15,18 @@ class LeadChoice {
 	/** 
 	 * Constructor
 	 * @param name
-	 * @param midiNote
+	 * @param midiValue
 	 */
-	public LeadChoice(String name, int midiNote) {
+	public LeadChoice(String name, int midiValue) {
 		this.name = name;
-		this.midiSound = midiNote;
+		this.midiSound = midiValue;
 	}
 
 	/**
 	 * Getter for sound
 	 * @return
 	 */
-	public int getMidiNote() {
+	public int getMidiSound() {
 		return midiSound;
 	}
 
@@ -66,5 +66,4 @@ class LeadChoice {
 				new LeadChoice("Voice", 86),
 		};
 	}
-
 }

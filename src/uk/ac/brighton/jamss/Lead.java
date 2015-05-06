@@ -9,7 +9,9 @@ import javax.sound.midi.Synthesizer;
 //import org.apache.log4j.Logger;
 
 /**
- * This class creates the lead instrument
+ * This class creates a midi synthesiser and turns notes on
+ * and off, sleeping a thread for timing.
+ * @author Nick Walker
  */
 public class Lead { 
 
@@ -25,15 +27,17 @@ public class Lead {
 	private int noteForThisBeat;
 	public long sleepTime;
 
-	/** Creates new form Metronome */
+	/** 
+	 * Constructor
+	 */
 	public Lead() {
 		try {
 			final Synthesizer synthesizer = MidiSystem.getSynthesizer();
 			synthesizer.open();
-			channel = synthesizer.getChannels()[2];
+			channel = synthesizer.getChannels()[0];
 			channel.programChange(0, lead);
 			Instrument[] instr = synthesizer.getDefaultSoundbank().getInstruments();
-			System.out.println(instr[lead]);
+			//System.out.println(instr[lead]);
 			synthesizer.loadInstrument(instr[lead]);
 
 		} catch (MidiUnavailableException ex) {
@@ -42,8 +46,8 @@ public class Lead {
 	}
 
 	/**
-	 * Sets the MIDI note, in the percussion channel, to use for the 
-	 * metronome sound. See http://en.wikipedia.org/wiki/General_MIDI. 
+	 * Sets the MIDI note for creation of a
+	 * chord. 
 	 * @param note the MIDI note to use
 	 */
 	public void setNote(int note) {
@@ -61,7 +65,7 @@ public class Lead {
 
 
 	/**
-	 * Stops the metronome.
+	 * Stops the Lead.
 	 */
 	public void stop() {
 		keepPlaying = false;
@@ -72,7 +76,7 @@ public class Lead {
 
 	/**
 	 * Runnable that plays a chord of 3 MIDI notes for the length of
-	 * 1 whole metronome beat.
+	 * 1 whole beat.
 	 * @return
 	 */
 	private Runnable createRunnable() {
@@ -88,7 +92,7 @@ public class Lead {
 					channel.noteOn((noteForThisBeat + 7) - octaves, velocity);
 					
 					try {
-						Thread.sleep(sleepTime+1);
+						Thread.sleep(sleepTime+1);		//+1 to account for slight changes in timing from Band
 
 					} catch (InterruptedException ex) {
 						// log.debug("Interrupted");

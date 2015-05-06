@@ -40,5 +40,4 @@ class ScaleChoice {
 				new ScaleChoice("Minor"),
 		};
 	}
-
 }

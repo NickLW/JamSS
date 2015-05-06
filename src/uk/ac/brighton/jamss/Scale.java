@@ -1,5 +1,11 @@
 package uk.ac.brighton.jamss;
 
+/**
+ * This class contains and returns arrays for all possible choices
+ * of musical scale.
+ * @author Nick Walker
+ *
+ */
 public class Scale {
 
 	//MAJOR SCALES
@@ -80,6 +86,12 @@ public class Scale {
 	private static final String[] FsNAMEm        = {"F#",   "E",    "D",    "C#",   "B",    "A",    "G#",   "F#"};
 
 
+	/**
+	 * Returns the name array of chosen scale		
+	 * @param root
+	 * @param scale
+	 * @return
+	 */
 	public static String[] getScale(String root, String scale){
 		String[] ret = ENAME;
 
@@ -139,6 +151,12 @@ public class Scale {
 		return ret;
 	}
 
+	/**
+	 * Returns the frequency array of chosen scale
+	 * @param root
+	 * @param scale
+	 * @return
+	 */
 	public static double[] getFreq(String root, String scale){
 		double[] ret = EFREQUENCIES;
 

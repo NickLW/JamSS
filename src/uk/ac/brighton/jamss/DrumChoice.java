@@ -1,6 +1,5 @@
 package uk.ac.brighton.jamss;
 
-
 /**
  * This class creates the choices available to the user for the 
  * drum track.
@@ -20,7 +19,6 @@ class DrumChoice {
 
 	/**
 	 * Getter for name
-	 * @return
 	 */
 	public String getName() {
 		return dname;
@@ -33,7 +31,6 @@ class DrumChoice {
 	
 	/**
 	 * Getter for populating list of choices in GUI
-	 * @return
 	 */
 	public static DrumChoice[] getDChoice() {
 		return new DrumChoice[] {
@@ -41,5 +38,4 @@ class DrumChoice {
 				new DrumChoice("src/samples/110ChorusRide8thsF4.mid"),
 		};
 	}
-
 }

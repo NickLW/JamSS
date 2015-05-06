@@ -1,6 +1,5 @@
 package uk.ac.brighton.jamss;
 
-
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -38,15 +37,15 @@ import be.tarsos.dsp.pitch.PitchProcessor.PitchEstimationAlgorithm;
 import be.tarsos.dsp.util.fft.FFT;
 
 /**
- * V0.9
- * This class links the 3 main panels, the Input panel, the metronome panel
- * and the pitch detection panel. The detected pitch is passed to the metronome.
+ * This class links the 3 main panels, the Input panel, the Band panel
+ * and the spectrogram panel. The detected pitch is passed to the Band.
  */
 public class Jam extends JFrame implements PitchDetectionHandler {
 
 	private static final long serialVersionUID = 1383896180290138076L;
-	private final SpectrogramPanel panel;
-	private final MetronomePanel metPanel;
+	private final JPanel inputPanel;
+	private final SpectrogramPanel spectPanel;
+	private final BandPanel bandPanel;
 	private AudioDispatcher dispatcher;
 	private PitchEstimationAlgorithm algo;
 	private double pitch; 
@@ -54,6 +53,7 @@ public class Jam extends JFrame implements PitchDetectionHandler {
 	private int bufferSize = 1024 * 4;
 	private int overlap = 768 * 4 ;
 	private String fileName;
+	private Band band = new Band();
 
 
 	/**
@@ -64,14 +64,11 @@ public class Jam extends JFrame implements PitchDetectionHandler {
 		this.setLayout(new BorderLayout());
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("JamSS");
-		panel = new SpectrogramPanel();
-		metPanel = new MetronomePanel();
+		inputPanel = new InputPanel();
+		spectPanel = new SpectrogramPanel();
+		bandPanel = new BandPanel(band);
 		algo = PitchEstimationAlgorithm.FFT_YIN;
 		this.fileName = fileName;
-
-
-
-		JPanel inputPanel = new InputPanel();
 		
 		/**
 		 * Listener for selecting microphone input
@@ -94,11 +91,11 @@ public class Jam extends JFrame implements PitchDetectionHandler {
 
 		JPanel containerPanel = new JPanel(new GridLayout(1,0));
 		containerPanel.add(inputPanel);
-		containerPanel.add(metPanel);
+		containerPanel.add(bandPanel);
 		this.add(containerPanel,BorderLayout.NORTH);
 
 		JPanel otherContainer = new JPanel(new BorderLayout());
-		otherContainer.add(panel,BorderLayout.CENTER);
+		otherContainer.add(spectPanel,BorderLayout.CENTER);
 		otherContainer.setBorder(new TitledBorder("Current pitch"));
 
 
@@ -174,9 +171,9 @@ public class Jam extends JFrame implements PitchDetectionHandler {
 			System.arraycopy(audioFloatBuffer, 0, transformbuffer, 0, audioFloatBuffer.length); 
 			fft.forwardTransform(transformbuffer);
 			fft.modulus(transformbuffer, amplitudes);
-			panel.drawFFT(pitch, amplitudes,fft);
-			panel.repaint();
-			metPanel.getMetronome().setCurrNote(pitch);
+			spectPanel.drawFFT(pitch, amplitudes,fft);
+			spectPanel.repaint();
+			band.setCurrNote(pitch);
 			return true;
 		}
 
@@ -213,5 +210,9 @@ public class Jam extends JFrame implements PitchDetectionHandler {
 				frame.setVisible(true);
 			}
 		});
+	}
+
+	public Band getBand() {
+		return band;
 	}
 }

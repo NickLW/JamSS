@@ -50,5 +50,4 @@ class RootChoice {
 				new RootChoice("F"),
 		};
 	}
-
 }
