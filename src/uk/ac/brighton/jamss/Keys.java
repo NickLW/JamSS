@@ -86,9 +86,9 @@ public class Keys {
 					if (rndNote < 0.34){
 						noteForThisBeat += 2;
 					} else if (rndNote < 0.67){
-						noteForThisBeat += 4;
-					} else {
 						noteForThisBeat += 7;
+					} else {
+						noteForThisBeat += 12;
 					}
 
 					if(count > 1){

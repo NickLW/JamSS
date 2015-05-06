@@ -88,8 +88,8 @@ public class Lead {
 					noteForThisBeat = note;
 
 					channel.noteOn(noteForThisBeat - octaves, velocity);
-					channel.noteOn((noteForThisBeat + 4) - octaves, velocity);
 					channel.noteOn((noteForThisBeat + 7) - octaves, velocity);
+					channel.noteOn((noteForThisBeat + 12) - octaves, velocity);
 					
 					try {
 						Thread.sleep(sleepTime+1);		//+1 to account for slight changes in timing from Band
@@ -99,8 +99,8 @@ public class Lead {
 					}
 
 					channel.noteOff(noteForThisBeat - octaves);
-					channel.noteOff((noteForThisBeat + 4) - octaves);
 					channel.noteOff((noteForThisBeat + 7) - octaves);
+					channel.noteOff((noteForThisBeat + 12) - octaves);
 				}
 				// log.debug("Thread ending");
 			}
