@@ -121,12 +121,8 @@ public class SpectrogramPanel extends JComponent implements ComponentListener{
               int note = closestNote(frequency);
               
               
-              currentPitch = new StringBuilder("Current frequency: ").append((NAME[note])).append("Hz").toString();
+              currentPitch = new StringBuilder("Current note: ").append((NAME[note])).toString();
               
-              //test to get different sounds for diff notes
-              if (NAME[note] == "E"){
-            	 // Metronome.note 
-              }
 		}
 		
 		
@@ -154,10 +150,6 @@ public class SpectrogramPanel extends JComponent implements ComponentListener{
 		position+=3;
 		position = position % getWidth();
 	}
-	
-	//public String getNote(){
-		//return (NAME[note]);
-	//}
 
 
 	private static double normaliseFreq(double hz) {
